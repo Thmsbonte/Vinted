@@ -12,7 +12,7 @@ router.get("/offers", async (req, res) => {
     // On initialise les variables qu'on va utiliser dans notre requête
     let filter = {};
     let page = 1;
-    let limit = 5;
+    let limit = 20;
     let sort = {};
     // On vérifie si des paramètres query sont envoyés et on met à jour les variables le cas échéant
     if (req.query.page > 0) {

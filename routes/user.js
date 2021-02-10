@@ -9,6 +9,7 @@ const uid2 = require("uid2");
 
 // DB MODELS IMPORT
 const User = require("../models/User");
+const Offer = require("../models/Offer");
 
 // SIGN UP ROUTE
 router.post("/user/signup", async (req, res) => {
@@ -33,7 +34,7 @@ router.post("/user/signup", async (req, res) => {
           hash: hash,
           salt: salt,
         });
-        // Est-ce que l'utilisateur à uploadé une photo de profile
+        // Si l'utilisateur a uploadé une photo de profile, on l'ajoute à Cloudinary
         if (req.files.avatar) {
           const pictureToUpload = req.files.avatar.path;
           const pictureCloudinary = await cloudinary.uploader.upload(

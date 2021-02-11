@@ -14,7 +14,7 @@ const Offer = require("../models/Offer");
 // SIGN UP ROUTE
 router.post("/user/signup", async (req, res) => {
   try {
-    // Est-ce que l'email, le username, le téléphone et le mdp sont renseignés
+    // Est-ce que l'email, le username et le mdp sont renseignés
     if (req.fields.email && req.fields.username && req.fields.password) {
       // Est-ce que l'email existe déjà dans la BDD
       const mail = await User.findOne({ email: req.fields.email });
@@ -30,6 +30,7 @@ router.post("/user/signup", async (req, res) => {
             username: req.fields.username,
             phone: req.fields.phone,
           },
+          newsletter: req.fields.newsletter,
           token: token,
           hash: hash,
           salt: salt,

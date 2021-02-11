@@ -48,7 +48,7 @@ router.post("/user/signup", async (req, res) => {
         }
         await user.save();
         // Réponse au client
-        res.status(200).json(user);
+        res.status(200).json(user.token);
       } else {
         res.status(400).json({ message: "User already exist" });
       }

@@ -63,7 +63,7 @@ router.post("/user/signup", async (req, res) => {
       res.status(400).json({ message: "Missing fields" });
     }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -98,7 +98,7 @@ router.post("/user/login", async (req, res) => {
       res.status(400).json({ message: "Missing fields" });
     }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 

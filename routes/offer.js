@@ -80,7 +80,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
       res.status(400).json({ message: "Authentication failed" });
     }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -114,7 +114,7 @@ router.put("/offer/update", isAuthenticated, async (req, res) => {
       res.status(400).json({ message: "Missing parameters" });
     }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -147,7 +147,7 @@ router.put("/offer/updatepicture", isAuthenticated, async (req, res) => {
       res.status(400).json({ message: "Missing parameters" });
     }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -172,7 +172,7 @@ router.delete("/offer/delete", isAuthenticated, async (req, res) => {
       res.status(400).json({ message: "Missing parameters" });
     }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -194,7 +194,7 @@ router.get("/offer/:id", async (req, res) => {
       res.status(400).json({ message: "Missing parameters" });
     }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 

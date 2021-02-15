@@ -25,7 +25,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
         req.fields.size &&
         req.fields.condition &&
         req.fields.color &&
-        req.fields.city &&
+        req.fields.location &&
         req.files.picture.path
       ) {
         if (req.fields.description.length <= 500) {
@@ -41,7 +41,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
                   { TAILLE: req.fields.size },
                   { ETAT: req.fields.condition },
                   { COULEUR: req.fields.color },
-                  { EMPLACEMENT: req.fields.city },
+                  { EMPLACEMENT: req.fields.location },
                 ],
                 owner: req.user,
               });
@@ -101,7 +101,7 @@ router.put("/offer/update", isAuthenticated, async (req, res) => {
           { TAILLE: req.fields.size },
           { ETAT: req.fields.condition },
           { COULEUR: req.fields.color },
-          { EMPLACEMENT: req.fields.city },
+          { EMPLACEMENT: req.fields.location },
         ];
         await offer.save();
         res.status(200).json(offer);

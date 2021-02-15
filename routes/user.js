@@ -90,7 +90,6 @@ router.post("/user/login", async (req, res) => {
             },
           });
         } else {
-          console.log(error.response);
           res.status(401).json({ message: "Unauthorized" });
         }
       } else {
@@ -100,7 +99,7 @@ router.post("/user/login", async (req, res) => {
       res.status(400).json({ message: "Missing fields" });
     }
   } catch (error) {
-    res.status(400).json({ message: "test" });
+    res.status(400).json({ message: "Request to failed, please try again" });
   }
 });
 

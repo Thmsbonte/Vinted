@@ -20,7 +20,7 @@ const isAuthenticated = async (req, res, next) => {
     // Si oui on interroge la BDD pour savoir si le token existe
     // Si oui on récupère l'utilisateur et on l'ajoute à l'objet req
   } catch (error) {}
-  res.status(400).json({ error: error.message });
+  res.status(400).json({ message: error.message });
 };
 
 module.exports = isAuthenticated;

@@ -80,7 +80,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
       res.status(400).json({ message: "Authentication failed" });
     }
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(403).json({ message: error.message });
   }
 });
 
@@ -129,7 +129,6 @@ router.put("/offer/updatepicture", isAuthenticated, async (req, res) => {
       });
       if (offer.owner._id.toString() === req.user._id.toString()) {
         // Si oui on met à jour l'image et on répond à l'utilisateur authentifié
-        console.log(offer);
         const newPicture = req.files.picture.path;
         const newCloudinaryPicture = await cloudinary.uploader.upload(
           newPicture,

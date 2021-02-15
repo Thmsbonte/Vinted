@@ -74,11 +74,12 @@ router.post("/user/login", async (req, res) => {
     if (req.fields.email) {
       const user = await User.findOne({ email: req.fields.email });
       if (user) {
-        // Si oui, génération de son hash et vérification avec la BDD
+        // Si oui, génération de son hash
         const hash = SHA256(req.fields.password + user.salt).toString(
           encBase64
         );
-        // Si OK, réponse à l'utilisateur
+        // Vérification avec les information issues de la BDD. Si OK, réponse à l'utilisateur
+        console.log("yes");
         if (hash === user.hash) {
           res.status(200).json({
             _id: user._id,
@@ -89,16 +90,17 @@ router.post("/user/login", async (req, res) => {
             },
           });
         } else {
+          console.log(error.response);
           res.status(401).json({ message: "Unauthorized" });
         }
       } else {
-        res.status(400).json({ message: "Unauthorized" });
+        res.status(401).json({ message: "Unauthorized" });
       }
     } else {
       res.status(400).json({ message: "Missing fields" });
     }
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ message: "test" });
   }
 });
 

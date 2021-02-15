@@ -38,13 +38,35 @@ router.post("/user/signup", async (req, res) => {
         // Si l'utilisateur a uploadé une photo de profile, on l'ajoute à Cloudinary
         if (req.files.avatar) {
           const pictureToUpload = req.files.avatar.path;
-          const pictureCloudinary = await cloudinary.uploader.upload(
-            pictureToUpload,
-            {
-              folder: "vinted/user/" + user._id,
-            }
-          );
-          user.account.avatar = pictureCloudinary;
+          try {
+            const pictureCloudinary = await cloudinary.uploader.upload(
+              pictureToUpload,
+              {
+                folder: "vinted/user/" + user._id,
+              }
+            );
+            user.account.avatar = pictureCloudinary;
+          } catch (error) {
+            res
+              .status(400)
+              .json({ message: "Picture upload failed, please try again" });
+          }
+        } else {
+          try {
+            const pictureToUpload =
+              "https://res.cloudinary.com/thmsbonte/image/upload/v1613415366/vinted/user/no-avatar-6_zwtrch.png";
+            const pictureCloudinary = await cloudinary.uploader.upload(
+              pictureToUpload,
+              {
+                folder: "vinted/user/" + user._id,
+              }
+            );
+            user.account.avatar = pictureCloudinary;
+          } catch (error) {
+            res
+              .status(400)
+              .json({ message: "Picture upload failed, please try again" });
+          }
         }
         await user.save();
         // Réponse au client

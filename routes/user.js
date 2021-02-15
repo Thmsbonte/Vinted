@@ -92,8 +92,8 @@ router.post("/user/signup", async (req, res) => {
 // LOGIN ROUTE
 router.post("/user/login", async (req, res) => {
   try {
-    // Si mail est présent, vérification que l'utilisateur existe
-    if (req.fields.email) {
+    // Si mail et password sont présents, vérification que l'utilisateur existe
+    if (req.fields.email || req.fields.password) {
       const user = await User.findOne({ email: req.fields.email });
       if (user) {
         // Si oui, génération de son hash

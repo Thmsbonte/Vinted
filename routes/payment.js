@@ -20,11 +20,14 @@ router.post("/payment", async (req, res) => {
     if (offer_id) {
       // If we have an offer id, request to get offer information from DB
       const offer = await Offer.findById(offer_id);
-      const price = Number(offer.product_price) * 100;
+      const offerPrice = Number(offer.product_price);
+      const deliveryFees = 4.5;
+      const insuranceFees = 0.5;
+      const totalPrice = (offerPrice + deliveryFees + insuranceFees) * 100;
       try {
         // Payment request
         const response = await stripe.charges.create({
-          amount: price,
+          amount: totalPrice,
           currency: "eur",
           description: offer.product_description,
           source: stripeToken,

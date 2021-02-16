@@ -30,6 +30,8 @@ const offerRoutes = require("./routes/offer");
 app.use(offerRoutes);
 const offersRoutes = require("./routes/offers");
 app.use(offersRoutes);
+const paymentRoutes = require("./routes/payment");
+app.use(paymentRoutes);
 
 // DEFAULT ROUTE
 app.all("*", (req, res) => {

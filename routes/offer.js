@@ -26,7 +26,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
         req.fields.condition &&
         req.fields.color &&
         req.fields.location &&
-        req.files.picture.path
+        req.files.picture0
       ) {
         if (req.fields.description.length <= 500) {
           if (req.fields.title.length <= 50) {
@@ -46,14 +46,19 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
                 owner: req.user,
               });
               // on upload l'image sur Cloudinary avec l'id de l'offre en chemin
-              const pictureToUpload = req.files.picture.path;
-              const pictureCloudinary = await cloudinary.uploader.upload(
-                pictureToUpload,
-                { folder: "/vinted/offers/" + offer._id }
-              );
+              const picturesUploaded = [];
+              for (let i = 0; i < Object.keys(req.files).length; i++) {
+                const pictureToUpload = req.files[`picture${i}`]?.path;
+                const pictureCloudinary = await cloudinary.uploader.upload(
+                  pictureToUpload,
+                  { folder: `/vinted/offers/${offer._id}` }
+                );
+                picturesUploaded.push(pictureCloudinary);
+              }
+
               // Si l'uploade de l'image s'est bien passé on ajoute l'image à l'annonce et on la sauvegarde dans la BDD
-              if (pictureCloudinary) {
-                offer.product_image = pictureCloudinary;
+              if (picturesUploaded.length === Object.keys(req.files).length) {
+                offer.product_image = picturesUploaded;
                 await offer.save();
                 res.status(200).json(offer);
               } else {

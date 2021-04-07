@@ -79,10 +79,10 @@ router.post("/user/signup", async (req, res) => {
           },
         });
       } else {
-        res.status(400).json({ message: "User already exist" });
+        res.status(400).json({ message: "Utilisateur déjà existant" });
       }
     } else {
-      res.status(400).json({ message: "Missing fields" });
+      res.status(400).json({ message: "Champ(s) manquant(s)" });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -112,16 +112,18 @@ router.post("/user/login", async (req, res) => {
             },
           });
         } else {
-          res.status(401).json({ message: "Unauthorized" });
+          res.status(401).json({ message: "Non autorisé" });
         }
       } else {
-        res.status(401).json({ message: "Unauthorized" });
+        res.status(401).json({ message: "Non autorisé" });
       }
     } else {
-      res.status(400).json({ message: "Missing fields" });
+      res.status(400).json({ message: "Champ(s) manquant(s)" });
     }
   } catch (error) {
-    res.status(400).json({ message: "Request to failed, please try again" });
+    res.status(400).json({
+      message: "La connexion à la base de donnée a échoué, merci de réessayer",
+    });
   }
 });
 

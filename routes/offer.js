@@ -78,21 +78,21 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
                 });
               }
             } else {
-              res.status(400).json({ message: "Price : maximum 100000" });
+              res.status(400).json({ message: "Prix maximum 100 000 euros" });
             }
           } else {
-            res.status(400).json({ message: "Title : maximum 50 characters" });
+            res.status(400).json({ message: "Titre : maximum 50 caractères" });
           }
         } else {
           res
             .status(400)
-            .json({ message: "Description : maximum 500 characters" });
+            .json({ message: "Description : maximum 500 caractères" });
         }
       } else {
-        res.status(400).json({ message: "Missing fields" });
+        res.status(400).json({ message: "Champ(s) manquant(s)" });
       }
     } else {
-      res.status(400).json({ message: "Authentication failed" });
+      res.status(400).json({ message: "L'authentification a échoué" });
     }
   } catch (error) {
     res.status(403).json({ message: error.message });
@@ -123,10 +123,10 @@ router.put("/offer/update", isAuthenticated, async (req, res) => {
       } else {
         res
           .status(400)
-          .json({ message: "Your are not allowed to modify this offer" });
+          .json({ message: "Vous n'êtes pas autorisé à modifier cet article" });
       }
     } else {
-      res.status(400).json({ message: "Missing parameters" });
+      res.status(400).json({ message: "Champ(s) manquant(s)" });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -155,10 +155,10 @@ router.put("/offer/updatepicture", isAuthenticated, async (req, res) => {
       } else {
         res
           .status(400)
-          .json({ message: "Your are not allowed to modify this picture" });
+          .json({ message: "Vous n'êtes pas autorisé à modifier cet article" });
       }
     } else {
-      res.status(400).json({ message: "Missing parameters" });
+      res.status(400).json({ message: "Champ(s) manquant(s)" });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -174,16 +174,16 @@ router.delete("/offer/delete", isAuthenticated, async (req, res) => {
       if (offer.owner._id.toString() === req.user._id.toString()) {
         await offer.deleteOne();
         res.status(200).json({
-          message: `Your offer ${offer.product_name} has been deleted`,
+          message: `Votre article ${offer.product_name} a été supprimé`,
         });
       } else {
         res
           .status(400)
-          .json({ message: "Your are not allowed to delete this offer" });
+          .json({ message: "Vous n'êtes pas autorisé à modifier cet article" });
       }
       // On vérifie que l'annonce existe et appartient à l'utilisateur authentifié
     } else {
-      res.status(400).json({ message: "Missing parameters" });
+      res.status(400).json({ message: "Champ(s) manquant(s)" });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -202,10 +202,10 @@ router.get("/offer/:id", async (req, res) => {
       if (offer) {
         res.status(200).json(offer);
       } else {
-        res.status(400).json({ message: "This offer doesn't exist" });
+        res.status(400).json({ message: "Cet article n'existe pas" });
       }
     } else {
-      res.status(400).json({ message: "Missing parameters" });
+      res.status(400).json({ message: "Champ(s) manquant(s)" });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });

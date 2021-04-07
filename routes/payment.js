@@ -44,14 +44,18 @@ router.post("/payment", async (req, res) => {
         }
       } catch (error) {
         console.log(error.message);
-        res.status(400).json({ message: "Payment failed, please try again" });
+        res
+          .status(400)
+          .json({ message: "Le paiement a échoué, merci de réessayer" });
       }
     } else {
-      res.status(400).json({ message: "Offer unknown" });
+      res.status(400).json({ message: "Article inconnnu" });
     }
   } catch (error) {
     console.log(error.message);
-    res.status(400).json({ message: "Payment failed, please try again" });
+    res
+      .status(400)
+      .json({ message: "Le paiement a échoué, merci de réessayer" });
   }
 });
 

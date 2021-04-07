@@ -14,34 +14,44 @@ const isAuthenticated = require("../middleware/isAuthenticated");
 
 // PUBLISH AN OFFER
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
+  const {
+    title,
+    description,
+    price,
+    brand,
+    size,
+    condition,
+    color,
+    location,
+  } = req.fields;
   try {
     if (req.user) {
       // Si l'utilisateur est authentifié on vérifie que les champs sont renseignés
       if (
-        req.fields.title &&
-        req.fields.description &&
-        req.fields.price &&
-        req.fields.brand &&
-        req.fields.size &&
-        req.fields.condition &&
-        req.fields.color &&
-        req.fields.location &&
+        title &&
+        description &&
+        price &&
+        brand &&
+        size &&
+        condition &&
+        color &&
+        location &&
         req.files.picture0
       ) {
-        if (req.fields.description.length <= 500) {
-          if (req.fields.title.length <= 50) {
-            if (req.fields.price <= 100000) {
+        if (description.length <= 500) {
+          if (title.length <= 50) {
+            if (price <= 100000) {
               // Si tous les champs sont biens renseignés on crée une nouvelle annonce  sans image, qu'on lie à l'utilisateur
               const offer = new Offer({
-                product_name: req.fields.title,
-                product_description: req.fields.description,
-                product_price: req.fields.price,
+                product_name: title,
+                product_description: description,
+                product_price: price,
                 product_details: [
-                  { MARQUE: req.fields.brand },
-                  { TAILLE: req.fields.size },
-                  { ETAT: req.fields.condition },
-                  { COULEUR: req.fields.color },
-                  { EMPLACEMENT: req.fields.location },
+                  { MARQUE: brand },
+                  { TAILLE: size },
+                  { ETAT: condition },
+                  { COULEUR: color },
+                  { EMPLACEMENT: location },
                 ],
                 owner: req.user,
               });

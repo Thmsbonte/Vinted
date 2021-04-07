@@ -166,12 +166,13 @@ router.put("/offer/updatepicture", isAuthenticated, async (req, res) => {
 });
 
 // DELETE AN OFFER
-router.delete("/offer/delete", isAuthenticated, async (req, res) => {
+router.post("/offer/delete", async (req, res) => {
+  const { offer_id, user_id } = req.fields;
   try {
     // On vérifie que l'id de l'annonce est bien transmis
-    if (req.fields.id) {
-      const offer = await Offer.findById(req.fields.id).populate("owner");
-      if (offer.owner._id.toString() === req.user._id.toString()) {
+    if (offer_id && user_id) {
+      const offer = await Offer.findById(offer_id).populate("owner");
+      if (offer.owner._id.toString() === user_id) {
         await offer.deleteOne();
         res.status(200).json({
           message: `Votre article ${offer.product_name} a été supprimé`,

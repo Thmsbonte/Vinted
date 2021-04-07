@@ -47,4 +47,26 @@ router.get("/offers", async (req, res) => {
   }
 });
 
+// GET SPECIFIC USER OFFERS
+router.post("/my-offers", async (req, res) => {
+  const { user_id } = req.fields;
+  try {
+    if (user_id) {
+      const myOffers = await Offer.find({ owner: user_id }).populate({
+        path: "owner",
+        select: "account email token",
+      });
+      if (myOffers) {
+        res.status(200).json(myOffers);
+      } else {
+        res.status(400).json({ message: "Pas d'article trouvé" });
+      }
+    } else {
+      res.status(403).json({ message: "Utilisateur non connecté" });
+    }
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+});
+
 module.exports = router;

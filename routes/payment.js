@@ -6,6 +6,7 @@ router.use(formidable());
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_API_SECRET);
 const mongoose = require("mongoose");
+const cloudinary = require("cloudinary").v2;
 
 // MODEL IMPORT
 const User = require("../models/User");
@@ -35,11 +36,17 @@ router.post("/payment", async (req, res) => {
         res.status(200).json(response);
         // If OK delete of the offer in the DB
         try {
+          //Je supprime ce qui il y a dans le dossier Cloudniary
+          await cloudinary.api.delete_resources_by_prefix(
+            `vinted/offers/${offer_id}`
+          );
+          //Une fois le dossier vide, je peux le supprimer !
+          await cloudinary.api.delete_folder(`vinted/offers/${offer_id}`);
           const deleteOffer = await Offer.findByIdAndDelete(offer_id).populate(
             "owner"
-          ); // We also get the owner's offer to notify him
+          ); // We also get the owner's offer to notify him (by email for instance -> not included in this version)
         } catch (error) {
-          // If delete fails we have to generate an offer in the back-office (to do)
+          // If delete fails we have to generate an error in the back-office (to do)
           console.log(error.message);
         }
       } catch (error) {

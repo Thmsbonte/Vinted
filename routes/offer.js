@@ -247,7 +247,6 @@ router.post("/offer/delete", isAuthenticated, async (req, res) => {
         );
         //Une fois le dossier vide, je peux le supprimer !
         await cloudinary.api.delete_folder(`vinted/offers/${offer_id}`);
-        console.log("05");
         await offer.deleteOne();
         res.status(200).json({
           message: `Votre article ${offer.product_name} a été supprimé`,

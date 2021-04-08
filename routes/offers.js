@@ -50,6 +50,7 @@ router.get("/offers", async (req, res) => {
 // GET SPECIFIC USER OFFERS
 router.post("/my-offers", async (req, res) => {
   const { user_id } = req.fields;
+  console.log("01", user_id);
   try {
     if (user_id) {
       const myOffers = await Offer.find({ owner: user_id }).populate({

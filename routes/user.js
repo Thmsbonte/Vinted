@@ -91,17 +91,19 @@ router.post("/user/signup", async (req, res) => {
 
 // LOGIN ROUTE
 router.post("/user/login", async (req, res) => {
+  console.log("01");
   try {
     // Si mail et password sont présents, vérification que l'utilisateur existe
     if (req.fields.email || req.fields.password) {
+      console.log("02");
       const user = await User.findOne({ email: req.fields.email });
+      console.log("02");
       if (user) {
         // Si oui, génération de son hash
         const hash = SHA256(req.fields.password + user.salt).toString(
           encBase64
         );
         // Vérification avec les information issues de la BDD. Si OK, réponse à l'utilisateur
-        console.log("yes");
         if (hash === user.hash) {
           res.status(200).json({
             _id: user._id,

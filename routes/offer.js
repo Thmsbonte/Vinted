@@ -233,19 +233,21 @@ router.post("/offer/deletepicture", isAuthenticated, async (req, res) => {
 });
 
 // DELETE AN OFFER
-router.post("/offer/delete", async (req, res) => {
-  const { offer_id, user_id } = req.fields;
+router.post("/offer/delete", isAuthenticated, async (req, res) => {
+  const { offer_id } = req.fields;
   try {
     // On vérifie que l'id de l'annonce est bien transmis
-    if (offer_id && user_id) {
+    if (offer_id) {
+      console.log("02", offer_id);
       const offer = await Offer.findById(offer_id).populate("owner");
-      if (offer.owner._id.toString() === user_id) {
+      if (offer.owner._id.toString() === req.user._id.toString()) {
         //Je supprime ce qui il y a dans le dossier
         await cloudinary.api.delete_resources_by_prefix(
-          `/vinted/offers/${offer_id}`
+          `vinted/offers/${offer_id}`
         );
         //Une fois le dossier vide, je peux le supprimer !
-        await cloudinary.api.delete_folder(`/vinted/offers/${offer_id}`);
+        await cloudinary.api.delete_folder(`vinted/offers/${offer_id}`);
+        console.log("05");
         await offer.deleteOne();
         res.status(200).json({
           message: `Votre article ${offer.product_name} a été supprimé`,

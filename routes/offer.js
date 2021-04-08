@@ -195,7 +195,7 @@ router.post("/offer/deletepicture", isAuthenticated, async (req, res) => {
   const { offer_id, image_index } = req.fields;
   try {
     // On vérifie que les champs existent
-    if ((offer_id, image_index)) {
+    if (offer_id && image_index >= 0) {
       // On vérifie que l'annonce existe et appartient à l'utilisateur
       const offer = await Offer.findById(offer_id).populate({
         path: "owner",

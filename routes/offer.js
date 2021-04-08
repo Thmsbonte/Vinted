@@ -23,6 +23,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
     condition,
     color,
     location,
+    swap,
   } = req.fields;
   try {
     if (req.user) {
@@ -46,6 +47,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
                 product_name: title,
                 product_description: description,
                 product_price: price,
+                product_swap: swap,
                 product_details: [
                   { MARQUE: brand },
                   { TAILLE: size },
@@ -100,23 +102,37 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
 });
 
 // UPDATE AN OFFER
-router.put("/offer/update", isAuthenticated, async (req, res) => {
+router.post("/offer/update/:offer_id", isAuthenticated, async (req, res) => {
+  const { offer_id } = req.params;
+  const {
+    title,
+    description,
+    price,
+    brand,
+    size,
+    condition,
+    color,
+    location,
+    swap,
+    user_id,
+  } = req.fields;
   try {
     // On vérifie que les champs existent
-    if (req.fields.id) {
+    if (offer_id) {
       // On vérifie que l'annonce existe et appartient à l'utilisateur
-      const offer = await Offer.findById(req.fields.id).populate("owner");
+      const offer = await Offer.findById(offer_id).populate("owner");
       if (offer.owner._id.toString() === req.user._id.toString()) {
         // Si oui on met à jour l'annonce et on répond à l'utilisateur authentifié
-        offer.product_name = req.fields.title;
-        offer.product_description = req.fields.description;
-        offer.product_price = req.fields.price;
+        offer.product_name = title;
+        offer.product_description = description;
+        offer.product_price = price;
+        offer.product_swap = swap;
         offer.product_details = [
-          { MARQUE: req.fields.brand },
-          { TAILLE: req.fields.size },
-          { ETAT: req.fields.condition },
-          { COULEUR: req.fields.color },
-          { EMPLACEMENT: req.fields.location },
+          { MARQUE: brand },
+          { TAILLE: size },
+          { ETAT: condition },
+          { COULEUR: color },
+          { EMPLACEMENT: location },
         ];
         await offer.save();
         res.status(200).json(offer);
@@ -133,25 +149,76 @@ router.put("/offer/update", isAuthenticated, async (req, res) => {
   }
 });
 
-// UPDATE THE IMAGE OF AN OFFER
-router.put("/offer/updatepicture", isAuthenticated, async (req, res) => {
+// UPDATE AN IMAGE TO AN OFFER
+router.post("/offer/updatepicture", isAuthenticated, async (req, res) => {
   try {
     // On vérifie que les champs existent
-    if (req.fields.id) {
+    if (req.fields.offer_id) {
       // On vérifie que l'annonce existe et appartient à l'utilisateur
-      const offer = await Offer.findById(req.fields.id).populate({
+      const offer = await Offer.findById(req.fields.offer_id).populate({
         path: "owner",
       });
       if (offer.owner._id.toString() === req.user._id.toString()) {
         // Si oui on met à jour l'image et on répond à l'utilisateur authentifié
-        const newPicture = req.files.picture.path;
-        const newCloudinaryPicture = await cloudinary.uploader.upload(
-          newPicture,
-          { public_id: offer.product_image.public_id, overwrite: true }
+        const addPicture = req.files.picture.path;
+        const pictureCloudinary = await cloudinary.uploader.upload(addPicture, {
+          folder: `/vinted/offers/${offer._id}`,
+        });
+        // Si l'uploade de l'image s'est bien passé on ajoute l'image à l'annonce et on la sauvegarde dans la BDD
+        if (pictureCloudinary) {
+          const newProductImages = [...offer.product_image];
+          newProductImages.push(pictureCloudinary);
+          offer.product_image = newProductImages;
+          await offer.save();
+          res.status(200).json(pictureCloudinary);
+        } else {
+          res.status(400).json({
+            message:
+              "We have encoutered a problem with the upload of your picture. Please try again",
+          });
+        }
+      } else {
+        res
+          .status(400)
+          .json({ message: "Vous n'êtes pas autorisé à modifier cet article" });
+      }
+    } else {
+      res.status(400).json({ message: "Champ(s) manquant(s)" });
+    }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// DELETE AN IMAGE OF AN OFFER
+router.post("/offer/deletepicture", isAuthenticated, async (req, res) => {
+  const { offer_id, image_index } = req.fields;
+  try {
+    // On vérifie que les champs existent
+    if ((offer_id, image_index)) {
+      // On vérifie que l'annonce existe et appartient à l'utilisateur
+      const offer = await Offer.findById(offer_id).populate({
+        path: "owner",
+      });
+      if (offer.owner._id.toString() === req.user._id.toString()) {
+        const result = await cloudinary.uploader.destroy(
+          offer.product_image[image_index].public_id
         );
-        offer.product_image = newCloudinaryPicture;
-        await offer.save();
-        res.status(200).json(offer);
+        if (result) {
+          const newPictures = [...offer.product_image];
+          newPictures.splice(image_index, 1);
+          offer.product_image = newPictures;
+          await offer.save();
+          res.status(200).json(offer.product_image);
+        } else {
+          res
+            .status(400)
+            .json({ message: "Votre image n'a pas pu être supprimée" });
+        }
+        // const newCloudinaryPicture = await cloudinary.uploader.upload(
+        //   newPicture,
+        //   { public_id: offer.product_image.public_id, overwrite: true }
+        // );
       } else {
         res
           .status(400)
@@ -173,6 +240,12 @@ router.post("/offer/delete", async (req, res) => {
     if (offer_id && user_id) {
       const offer = await Offer.findById(offer_id).populate("owner");
       if (offer.owner._id.toString() === user_id) {
+        //Je supprime ce qui il y a dans le dossier
+        await cloudinary.api.delete_resources_by_prefix(
+          `/vinted/offers/${offer_id}`
+        );
+        //Une fois le dossier vide, je peux le supprimer !
+        await cloudinary.api.delete_folder(`/vinted/offers/${offer_id}`);
         await offer.deleteOne();
         res.status(200).json({
           message: `Votre article ${offer.product_name} a été supprimé`,
